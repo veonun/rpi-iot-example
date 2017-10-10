@@ -1,7 +1,7 @@
 # rpi-iot-example
 ## IOT-example lab
 
-# WeMos D1
+```# WeMos D1
 from time import sleep
 from machine import Pin
 red_led = Pin(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
@@ -23,10 +23,10 @@ for i in range(0,100):
     green_led.value(1)
     blue_led.value(0)
     sleep(0.2)
+```
 
 
-
-# WeMos D1
+```# WeMos D1
 from time import sleep
 from machine import Pin
 red_led = Pin(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
@@ -48,9 +48,9 @@ for i in range(0,100):
 
     set_rgb(0,0,1)
     sleep(0.2)
+```
 
-
-# WeMos D1
+```# WeMos D1
 from time import sleep
 from machine import Pin
 red_led = PWM(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
@@ -69,6 +69,6 @@ while True:
     
     set_rgb(0,j/100.0, 0)
     sleep(0.02)
- 
+ ```
   
 
