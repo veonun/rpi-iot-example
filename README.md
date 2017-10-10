@@ -70,5 +70,34 @@ while True:
     set_rgb(0,j/100.0, 0)
     sleep(0.02)
  ```
-  
+ Upload uwebsockets.py
+wget https://gist.githubusercontent.com/laurivosandi/2983fe38ad7aff85a5e3b86be8f00718/raw/cfa52f739080d42029d21017c5ae2a7b97793b06/uwebsockets.py
+ampy -p /dev/ttyUSB0 put uwebsockets.py
+ 
+```# Connect to wireless network as client
+import network
+wlan = network.WLAN(network.STA_IF)
+wlan.active(True)
+wlan.connect("itcollege")
+
+
+import sys
+import uwebsockets
+from machine import Pin, PWM
+led = PWM(Pin(14, mode=Pin.OUT), freq=400) # SCK LED on WeMos D1
+uri = "ws://iot.koodur.com:80/ws/living-room-of-lauri"
+print("Connecting to:", uri)
+conn = uwebsockets.connect(uri)
+conn.send("alive")
+while True:
+    print("Reading message...")
+    try:
+        fin, opcode, data = conn.read_frame()
+    except OSError: # Connection timeout or reset
+        sys.exit() # Soft reset
+    if data.startswith(b"duty:"):
+        led.duty(int(data[5:]))
+    else:
+       print("Got unknown command:", data)
+ ```
 
