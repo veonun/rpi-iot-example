@@ -1,0 +1,231 @@
+# WeMos D1
+from time import sleep
+from machine import Pin
+red_led = Pin(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
+green_led = Pin(14, mode=Pin.OUT)   # D13 on Wemos D1, LED connected to SCK
+blue_led = Pin(13, mode=Pin.OUT) 
+
+for i in range(0,100):
+    red_led.value(1) # Polarity inverted, pin sinks 3.3v
+    green_led.value(0) 
+    blue_led.value(0) # Pin sources voltage
+    sleep(0.2)
+
+    red_led.value(1)
+    green_led.value(0)
+    blue_led.value(1)
+    sleep(0.2)
+
+    red_led.value(1)
+    green_led.value(1)
+    blue_led.value(0)
+    sleep(0.2)
+
+
+
+# WeMos D1
+from time import sleep
+from machine import Pin
+red_led = Pin(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
+green_led = Pin(14, mode=Pin.OUT)   # D13 on Wemos D1, LED connected to SCK
+blue_led = Pin(13, mode=Pin.OUT) 
+
+
+def set_rgb(r,g,b):
+    red_led.value(1-r)
+    green_led.value(1-g)
+    blue_led.value(1-b)
+    
+for i in range(0,100):
+    set_rgb(1,0,0)
+    sleep(0.2)
+ 
+    set_rgb(0,1,0)
+    sleep(0.2)
+
+    set_rgb(0,0,1)
+    sleep(0.2)
+
+
+# WeMos D1
+from time import sleep
+from machine import Pin
+red_led = PWM(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
+green_led = PWM(14, mode=Pin.OUT)   # D13 on Wemos D1, LED connected to SCK
+blue_led = PWM(13, mode=Pin.OUT) 
+
+def set_rgb(r,g,b):
+    red_led.duty(1023-int(r*1023))
+    green_led.duty(1023-int(g*1023))
+    blue_led.duty(1023-int(b*1023))
+ 
+while True:   
+    for j in range(0,100):
+    set_rgb(j/100.0, 0, 0)
+    sleep(0.02)
+    
+    set_rgb(0,j/100.0, 0)
+    sleep(0.02)
+
+
+
+
+import socket
+from machine import Pin
+
+led_pin = Pin(5, Pin.OUT)
+
+CONTENT = """\
+HTTP/1.0 200 OK
+Content-Type: text/html
+
+<html>
+  <head>
+  </head>
+  <body>
+    <p>Hello #%d from MicroPython!</p>
+    <a href="/toggle">Click here to toggle LED hooked to pin 5</a>
+  </body>
+</html>
+"""
+
+def main():
+    s = socket.socket()
+    ai = socket.getaddrinfo("0.0.0.0", 8080)
+    print("Bind address info:", ai)
+    addr = ai[0][-1]
+
+    s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    s.bind(addr)
+    s.listen(5)
+    print("Listening, connect your browser to http://<this_host>:8080/")
+
+    counter = 0
+    while True:
+        sock, addr = s.accept()
+        print("Client address:", addr)
+        stream = sock.makefile("rwb")
+        req = stream.readline().decode("ascii")
+        method, path, protocol = req.split(" ")
+        print("Got", method, "request for", path)
+        if path == "/toggle":
+            led_pin.value(1-led_pin.value())
+        while True:
+            h = stream.readline().decode("ascii").strip()
+            if h == "":
+                break
+            print("Got HTTP header:", h)
+        stream.write((CONTENT % counter).encode("ascii"))
+        stream.close()
+        sock.close()
+        counter += 1
+        print()
+
+        main()
+
+student@klass1-08-l:~/rpi-iot-example$ picocom -b115200 /dev/ttyUSB0
+picocom v1.7
+
+port is        : /dev/ttyUSB0
+flowcontrol    : none
+baudrate is    : 115200
+parity is      : none
+databits are   : 8
+escape is      : C-a
+local echo is  : no
+noinit is      : no
+noreset is     : no
+nolock is      : no
+send_cmd is    : sz -vv
+receive_cmd is : rz -vv
+imap is        : 
+omap is        : 
+emap is        : crcrlf,delbs,
+
+Terminal ready
+
+Thanks for using picocom
+student@klass1-08-l:~/rpi-iot-example$ picocom -b115200 /dev/ttyUSB0
+picocom v1.7
+
+port is        : /dev/ttyUSB0
+flowcontrol    : none
+baudrate is    : 115200
+parity is      : none
+databits are   : 8
+escape is      : C-a
+local echo is  : no
+noinit is      : no
+noreset is     : no
+nolock is      : no
+send_cmd is    : sz -vv
+receive_cmd is : rz -vv
+imap is        : 
+omap is        : 
+emap is        : crcrlf,delbs,
+
+Terminal ready
+ets Jun  8 2016 00:22:57
+
+rst:0x1 (POWERON_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+flash read err, 1000
+ets_main.c 371 
+ets Jun  8 2016 00:22:57
+
+rst:0x10 (RTCWDT_RTC_RESET),boot:0x17 (SPI_FAST_FLASH_BOOT)
+configsip: 0, SPIWP:0xee
+clk_drv:0x00,q_drv:0x00,d_drv:0x00,cs0_drv:0x00,hd_drv:0x00,wp_drv:0x00
+mode:DIO, clock div:2
+load:0x3fff0010,len:4
+load:0x3fff0014,len:4268
+load:0x40078000,len:0
+load:0x40078000,len:10648
+entry 0x4007a56c
+W (32) rtc_clk: Potentially bogus XTAL frequency: 35 MHz, guessing 40 MHz
+I (994) cpu_start: Pro cpu up.
+I (994) cpu_start: Single core mode
+I (996) heap_init: Initializing. RAM available for dynamic allocation:
+I (1006) heap_init: At 3FFAE2A0 len 00001D60 (7 KiB): DRAM
+I (1025) heap_init: At 3FFD4158 len 0000BEA8 (47 KiB): DRAM
+I (1044) heap_init: At 3FFE0440 len 00003BC0 (14 KiB): D/IRAM
+I (1064) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (1084) heap_init: At 4008F3A8 len 00010C58 (67 KiB): IRAM
+I (1103) cpu_start: Pro cpu start user code
+I (1164) cpu_start: Starting scheduler on PRO CPU.
+I (1452) wifi: wifi firmware version: 4acbf1f
+I (1452) wifi: config NVS flash: enabled
+I (1452) wifi: config nano formating: disabled
+I (1452) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (1462) system_api: Base MAC address is not set, read default base MAC address from BLK0 of EFUSE
+I (1482) wifi: Init dynamic tx buffer num: 32
+I (1482) wifi: Init data frame dynamic rx buffer num: 64
+I (1482) wifi: Init management frame dynamic rx buffer num: 64
+I (1492) wifi: wifi driver task: 3ffda844, prio:23, stack:4096
+I (1492) wifi: Init static rx buffer num: 10
+I (1502) wifi: Init dynamic rx buffer num: 0
+I (1502) wifi: Init rx ampdu len mblock:7
+I (1512) wifi: Init lldesc rx ampdu entry mblock:4
+I (1512) wifi: wifi power manager task: 0x3ffdfcbc prio: 21 stack: 2560
+I (1532) phy: phy_version: 359.0, e79c19d, Aug 31 2017, 17:06:07, 0, 0
+I (1542) wifi: mode : null
+I (1542) wifi: mode : sta (30:ae:a4:27:6c:54)
+I (1542) wifi: STA_START
+I (1602) modsocket: Initializing
+Bind address info: [(2, 1, 0, '0.0.0.0', ('0.0.0.0', 8080))]
+Listening, connect your browser to http://<this_host>:8080/
+I (1662) wifi: n:1 0, o:1 0, ap:255 255, sta:1 0, prof:1
+I (1662) wifi: state: init -> auth (b0)
+I (1672) wifi: state: auth -> assoc (0)
+I (1672) wifi: state: assoc -> run (10)
+I (1672) wifi: connected with itcollege, channel 1
+I (1672) wifi: event 4
+I (2942) event: ip: 10.59.1.176, mask: 255.255.0.0, gw: 10.59.1.1
+I (2942) wifi: GOT_IP
+I (4672) wifi: pm start, type:0
+
+
+
+
+ 
+  
+
