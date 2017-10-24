@@ -1,103 +1,52 @@
-# rpi-iot-example
-## IOT-example lab
+# IOT LED Example for WEMOS ESP8266
 
-```# WeMos D1
-from time import sleep
-from machine import Pin
-red_led = Pin(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
-green_led = Pin(14, mode=Pin.OUT)   # D13 on Wemos D1, LED connected to SCK
-blue_led = Pin(13, mode=Pin.OUT) 
+This example is prepared for [Introduction to Computers and Informatics class of TTU CyberSec Eng.](https://wiki.itcollege.ee/index.php/Category:I600_Introduction_to_Computers_and_Informatics#Assignment:_Set_up_basic_IoT_scenario)
 
-for i in range(0,100):
-    red_led.value(1) # Polarity inverted, pin sinks 3.3v
-    green_led.value(0) 
-    blue_led.value(0) # Pin sources voltage
-    sleep(0.2)
+## Requirements
+* Python 3.x
 
-    red_led.value(1)
-    green_led.value(0)
-    blue_led.value(1)
-    sleep(0.2)
+## Running
 
-    red_led.value(1)
-    green_led.value(1)
-    blue_led.value(0)
-    sleep(0.2)
+First clone the repository to your computer via Git. Following commands are for Linux and Mac.
+```sh
+git clone https://github.com/veonun/rpi-iot-example.git
+cd iot-led
 ```
 
+### On your machine
 
-```# WeMos D1
-from time import sleep
-from machine import Pin
-red_led = Pin(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
-green_led = Pin(14, mode=Pin.OUT)   # D13 on Wemos D1, LED connected to SCK
-blue_led = Pin(13, mode=Pin.OUT) 
+Run `main.py` like
+```sh
+python main.py
+```
+then browse to [local host](http://localhost:8080/)
 
+### On WEMOS
 
-def set_rgb(r,g,b):
-    red_led.value(1-r)
-    green_led.value(1-g)
-    blue_led.value(1-b)
-    
-for i in range(0,100):
-    set_rgb(1,0,0)
-    sleep(0.2)
- 
-    set_rgb(0,1,0)
-    sleep(0.2)
+Run following command:
 
-    set_rgb(0,0,1)
-    sleep(0.2)
+```sh
+sudo ampy -p /dev/ttyUSB0 put main.py 
 ```
 
-```# WeMos D1
-from time import sleep
-from machine import Pin
-red_led = PWM(12, mode=Pin.OUT)    # D9 on Wemos D1, LED on the SOM
-green_led = PWM(14, mode=Pin.OUT)   # D13 on Wemos D1, LED connected to SCK
-blue_led = PWM(13, mode=Pin.OUT) 
+## Troubleshooting
 
-def set_rgb(r,g,b):
-    red_led.duty(1023-int(r*1023))
-    green_led.duty(1023-int(g*1023))
-    blue_led.duty(1023-int(b*1023))
- 
-while True:   
-    for j in range(0,100):
-    set_rgb(j/100.0, 0, 0)
-    sleep(0.02)
-    
-    set_rgb(0,j/100.0, 0)
-    sleep(0.02)
- ```
- Upload uwebsockets.py
-wget https://gist.githubusercontent.com/laurivosandi/2983fe38ad7aff85a5e3b86be8f00718/raw/cfa52f739080d42029d21017c5ae2a7b97793b06/uwebsockets.py
-ampy -p /dev/ttyUSB0 put uwebsockets.py
- 
-```# Connect to wireless network as client
-import network
-wlan = network.WLAN(network.STA_IF)
-wlan.active(True)
-wlan.connect("itcollege")
+### Resetting Device
 
+If for any reason your device is struct, you may need to reset and reflash it.
 
-import sys
-import uwebsockets
-from machine import Pin, PWM
-led = PWM(Pin(14, mode=Pin.OUT), freq=400) # SCK LED on WeMos D1
-uri = "ws://iot.koodur.com:80/ws/living-room-of-lauri"
-print("Connecting to:", uri)
-conn = uwebsockets.connect(uri)
-conn.send("alive")
-while True:
-    print("Reading message...")
-    try:
-        fin, opcode, data = conn.read_frame()
-    except OSError: # Connection timeout or reset
-        sys.exit() # Soft reset
-    if data.startswith(b"duty:"):
-        led.duty(int(data[5:]))
-    else:
-       print("Got unknown command:", data)
- ```
+Sample instructions do accomplish it are below for different chipsets:
 
+esp32:
+```sh
+wget http://micropython.org/resources/firmware/esp32-20171017-v1.9.2-279-g090b6b80.bin
+sudo esptool.py -p /dev/ttyUSB0 -b 460800 erase_flash
+sudo esptool.py -p /dev/ttyUSB0 -b 460800 write_flash --flash_mode dio 0x1000 esp32-*.bin
+```
+
+esp8266:
+```sh
+wget http://micropython.org/resources/firmware/esp8266-20170612-v1.9.1.bin
+sudo esptool.py -p /dev/ttyUSB0 -b 460800 erase_flash
+sudo esptool.py -p /dev/ttyUSB0 -b 460800 write_flash 0 esp8266-*.bin
+```
