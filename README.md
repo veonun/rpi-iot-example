@@ -2,9 +2,8 @@
 
 This example is prepared for [Introduction to Computers and Informatics class of TTU CyberSec Eng.](https://wiki.itcollege.ee/index.php/Category:I600_Introduction_to_Computers_and_Informatics#Assignment:_Set_up_basic_IoT_scenario)
 
-Don't forget to Upload uwebsockets.py
+Don't forget to Upload [uwebsockets.py](wget https://gist.githubusercontent.com/laurivosandi/2983fe38ad7aff85a5e3b86be8f00718/raw/cfa52f739080d42029d21017c5ae2a7b97793b06/uwebsockets.py)
 ```sh
-wget https://gist.githubusercontent.com/laurivosandi/2983fe38ad7aff85a5e3b86be8f00718/raw/cfa52f739080d42029d21017c5ae2a7b97793b06/uwebsockets.py
 ampy -p /dev/ttyUSB0 put uwebsockets.py
 ```
  
